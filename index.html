@@ -1128,4 +1128,104 @@ const route = data.routes[0].geometry.coordinates;
 /* remove old route */
 
 if(map.getSource("route")){
-map.rem
+map.removeLayer("route");
+map.removeSource("route");
+}
+
+
+/* draw route */
+
+map.addSource("route",{
+type:"geojson",
+data:{
+type:"Feature",
+geometry:{
+type:"LineString",
+coordinates:route
+}
+}
+});
+
+map.addLayer({
+id:"route",
+type:"line",
+source:"route",
+layout:{
+"line-cap":"round",
+"line-join":"round"
+},
+paint:{
+"line-color":"#2e9f57",
+"line-width":5
+}
+});
+
+
+setTimeout(()=>{
+animateBike(route);
+},1000);
+
+}
+
+
+/* MOVE BIKE */
+
+function animateBike(route){
+
+let index=0;
+
+function move(){
+
+if(index >= route.length-1){
+alert("Delivery Arrived!");
+return;
+}
+
+let start = route[index];
+let end = route[index+1];
+
+let progress = 0;
+
+const segment = setInterval(()=>{
+
+progress += 0.01;
+
+let lng = start[0] + (end[0]-start[0])*progress;
+let lat = start[1] + (end[1]-start[1])*progress;
+
+bike.setLngLat([lng,lat]);
+
+/* erase travelled route */
+
+const remaining = route.slice(index);
+
+map.getSource("route").setData({
+type:"Feature",
+geometry:{
+type:"LineString",
+coordinates:remaining
+}
+});
+
+if(progress >= 1){
+
+clearInterval(segment);
+
+index++;
+
+setTimeout(move,40);
+
+}
+
+},40);
+
+}
+
+move();
+
+}
+</script>
+
+
+</body>
+</html>
