@@ -991,8 +991,7 @@ updateCart();
 
 /* ===== DELIVERY MAP DEMO ===== */
 
-mapboxgl.accessToken =
-'pk.eyJ1IjoibW9zZXRpMjU0IiwiYSI6ImNtbXA1YXp4MDBqZzMycHNkazIzMHU1eGgifQ.09MI6Ic60OlQV3KwGPb23w';
+mapboxgl.accessToken = 'pk.eyJ1IjoibW9zZXRpMjU0IiwiYSI6ImNtbXA1YXp4MDBqZzMycHNkazIzMHU1eGgifQ.09MI6Ic60OlQV3KwGPb23w';
 
 const map = new mapboxgl.Map({
 container: 'delivery-map',
@@ -1129,4 +1128,4 @@ const route = data.routes[0].geometry.coordinates;
 /* remove old route */
 
 if(map.getSource("route")){
-map.removeLayer("
+map.rem
