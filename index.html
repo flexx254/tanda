@@ -989,7 +989,11 @@ document.getElementById("pay-visa").onclick=()=>processPayment("Visa");
 
 updateCart();
 
+
+
 /* ===== DELIVERY MAP DEMO ===== */
+
+window.addEventListener("load", function(){
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibW9zZXRpMjU0IiwiYSI6ImNtbXA1YXp4MDBqZzMycHNkazIzMHU1eGgifQ.09MI6Ic60OlQV3KwGPb23w';
 
@@ -998,6 +1002,10 @@ container: 'delivery-map',
 style: 'mapbox://styles/mapbox/streets-v12',
 center: [36.8219, -1.2921],
 zoom: 14
+});
+
+map.on("load", () => {
+map.resize();
 });
 
 /* SHOP LOCATION */
@@ -1014,7 +1022,6 @@ new mapboxgl.Marker(shopEl)
 .setLngLat(shop)
 .addTo(map);
 
-
 /* MOTORBIKE */
 
 const bikeEl = document.createElement("div");
@@ -1025,11 +1032,9 @@ const bike = new mapboxgl.Marker(bikeEl)
 .setLngLat(shop)
 .addTo(map);
 
-
 /* CUSTOMER MARKER */
 
 let customerMarker;
-
 
 /* DETECT USER LOCATION */
 
@@ -1040,14 +1045,10 @@ position.coords.longitude,
 position.coords.latitude
 ];
 
-/* center map on user */
-
 map.flyTo({
 center:userCoords,
 zoom:15
 });
-
-/* create draggable marker */
 
 const person = document.createElement("div");
 person.innerHTML = "📍";
@@ -1060,8 +1061,18 @@ draggable:true
 .setLngLat(userCoords)
 .addTo(map);
 
-});
+},
+() => {
 
+/* fallback if location blocked */
+
+const fallback = [36.8219, -1.2921];
+
+customerMarker = new mapboxgl.Marker({draggable:true})
+.setLngLat(fallback)
+.addTo(map);
+
+});
 
 /* CLICK MAP TO MOVE PIN */
 
@@ -1075,11 +1086,11 @@ customerMarker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
 
 });
 
-
 /* START DELIVERY BUTTON */
 
 const startBtn = document.createElement("button");
 startBtn.innerText = "Deliver Here";
+
 startBtn.style.position="absolute";
 startBtn.style.bottom="10px";
 startBtn.style.left="50%";
@@ -1092,7 +1103,6 @@ startBtn.style.borderRadius="5px";
 startBtn.style.cursor="pointer";
 
 document.getElementById("delivery-map").appendChild(startBtn);
-
 
 /* START DELIVERY */
 
@@ -1109,7 +1119,6 @@ getRoute([destination.lng,destination.lat]);
 
 };
 
-
 /* GET ROUTE */
 
 async function getRoute(destination){
@@ -1124,14 +1133,12 @@ const data = await res.json();
 
 const route = data.routes[0].geometry.coordinates;
 
-
 /* remove old route */
 
 if(map.getSource("route")){
 map.removeLayer("route");
 map.removeSource("route");
 }
-
 
 /* draw route */
 
@@ -1160,13 +1167,11 @@ paint:{
 }
 });
 
-
 setTimeout(()=>{
 animateBike(route);
 },1000);
 
 }
-
 
 /* MOVE BIKE */
 
@@ -1224,6 +1229,8 @@ setTimeout(move,40);
 move();
 
 }
+
+});
 </script>
 
 
