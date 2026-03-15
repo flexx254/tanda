@@ -989,8 +989,6 @@ document.getElementById("pay-visa").onclick=()=>processPayment("Visa");
 
 updateCart();
 
-
-
 /* ===== DELIVERY MAP DEMO ===== */
 
 window.addEventListener("load", function(){
@@ -1010,15 +1008,15 @@ map.resize();
 
 /* SHOP LOCATION */
 
-const shop = [36.8219, -1.2921];
+let shop = [36.8219, -1.2921];
 
-/* SHOP MARKER */
+/* CREATE SHOP MARKER */
 
 const shopEl = document.createElement("div");
 shopEl.innerHTML = "🏪";
 shopEl.style.fontSize = "26px";
 
-new mapboxgl.Marker(shopEl)
+const shopMarker = new mapboxgl.Marker(shopEl)
 .setLngLat(shop)
 .addTo(map);
 
@@ -1036,6 +1034,34 @@ const bike = new mapboxgl.Marker(bikeEl)
 
 let customerMarker;
 
+/* FUNCTION: MOVE SHOP NEAR CUSTOMER */
+
+function generateShopNearCustomer(userCoords){
+
+const offsetLng = userCoords[0] + (Math.random()*0.02 - 0.01);
+const offsetLat = userCoords[1] + (Math.random()*0.02 - 0.01);
+
+return [offsetLng, offsetLat];
+
+}
+
+/* FUNCTION: FIT MAP TO SHOW BOTH */
+
+function fitMap(shop, customer){
+
+const bounds = new mapboxgl.LngLatBounds();
+
+bounds.extend(shop);
+bounds.extend(customer);
+
+map.fitBounds(bounds,{
+padding:80,
+maxZoom:15,
+duration:1200
+});
+
+}
+
 /* DETECT USER LOCATION */
 
 navigator.geolocation.getCurrentPosition(position => {
@@ -1045,21 +1071,44 @@ position.coords.longitude,
 position.coords.latitude
 ];
 
-map.flyTo({
-center:userCoords,
-zoom:15
-});
+/* MOVE SHOP NEAR USER */
+
+shop = generateShopNearCustomer(userCoords);
+
+shopMarker.setLngLat(shop);
+bike.setLngLat(shop);
+
+/* CREATE CUSTOMER PIN WITH LABEL */
+
+const container = document.createElement("div");
+container.style.display = "flex";
+container.style.flexDirection = "column";
+container.style.alignItems = "center";
+
+const label = document.createElement("div");
+label.innerText = "Your Location";
+label.style.background = "#2e9f57";
+label.style.color = "white";
+label.style.padding = "3px 8px";
+label.style.borderRadius = "4px";
+label.style.fontSize = "12px";
+label.style.marginBottom = "4px";
 
 const person = document.createElement("div");
 person.innerHTML = "📍";
 person.style.fontSize = "28px";
 
+container.appendChild(label);
+container.appendChild(person);
+
 customerMarker = new mapboxgl.Marker({
-element:person,
+element:container,
 draggable:true
 })
 .setLngLat(userCoords)
 .addTo(map);
+
+fitMap(shop, userCoords);
 
 },
 () => {
@@ -1200,8 +1249,6 @@ let lat = start[1] + (end[1]-start[1])*progress;
 
 bike.setLngLat([lng,lat]);
 
-/* erase travelled route */
-
 const remaining = route.slice(index);
 
 map.getSource("route").setData({
@@ -1231,6 +1278,9 @@ move();
 }
 
 });
+
+
+
 </script>
 
 
