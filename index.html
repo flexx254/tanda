@@ -989,6 +989,7 @@ document.getElementById("pay-visa").onclick=()=>processPayment("Visa");
 
 updateCart();
 
+
 /* ===== DELIVERY MAP DEMO ===== */
 
 window.addEventListener("load", function(){
@@ -1025,6 +1026,7 @@ const shopMarker = new mapboxgl.Marker(shopEl)
 const bikeEl = document.createElement("div");
 bikeEl.innerHTML = "🏍️";
 bikeEl.style.fontSize = "24px";
+bikeEl.style.transition = "transform 0.15s linear";
 
 const bike = new mapboxgl.Marker(bikeEl)
 .setLngLat(shop)
@@ -1059,6 +1061,17 @@ padding:80,
 maxZoom:15,
 duration:1200
 });
+
+}
+
+/* FUNCTION: CALCULATE DIRECTION */
+
+function getBearing(start, end){
+
+const lngDiff = end[0] - start[0];
+const latDiff = end[1] - start[1];
+
+return Math.atan2(latDiff, lngDiff) * (180 / Math.PI);
 
 }
 
@@ -1242,12 +1255,19 @@ let progress = 0;
 
 const segment = setInterval(()=>{
 
-progress += 0.01;
+progress += 0.005;
 
 let lng = start[0] + (end[0]-start[0])*progress;
 let lat = start[1] + (end[1]-start[1])*progress;
 
 bike.setLngLat([lng,lat]);
+
+/* ROTATE BIKE */
+
+const angle = getBearing(start,end);
+bikeEl.style.transform = `rotate(${angle}deg)`;
+
+/* ERASE TRAVELLED ROUTE */
 
 const remaining = route.slice(index);
 
@@ -1265,11 +1285,11 @@ clearInterval(segment);
 
 index++;
 
-setTimeout(move,40);
+setTimeout(move,20);
 
 }
 
-},40);
+},20);
 
 }
 
@@ -1278,9 +1298,6 @@ move();
 }
 
 });
-
-
-
 </script>
 
 
