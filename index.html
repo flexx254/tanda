@@ -980,22 +980,11 @@ localStorage.removeItem("demoCart");
 
 updateCart();
 
-location.reload();
-
-}
-
-document.getElementById("pay-mpesa").onclick=()=>processPayment("Mobile Money");
-document.getElementById("pay-visa").onclick=()=>processPayment("Visa");
-
-updateCart();
-
-
-
-/* ===== DELIVERY MAP DEMO ===== */
+/* ===== UBER-STYLE DELIVERY MAP ===== */
 
 window.addEventListener("load", function(){
 
-mapboxgl.accessToken = 'pk.eyJ1IjoibW9zZXRpMjU0IiwiYSI6ImNsanh1bWRzNTB5ZG0zZnA0Z3d3Z3A3amsifQ.ff8FbR0WNQ2-yBIuKb9zCw';
+mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN';
 
 const map = new mapboxgl.Map({
 container: 'delivery-map',
@@ -1004,21 +993,27 @@ center: [36.8219, -1.2921],
 zoom: 14
 });
 
-map.on("load", () => {
-map.resize();
-});
+map.on("load", () => map.resize());
 
-/* SHOP LOCATION */
+/* ============================= */
+/* STATE */
+/* ============================= */
 
 let shop = [36.8219, -1.2921];
+let selectingLocation = false;
+let confirmedLocation = null;
 
-/* SHOP MARKER */
+/* ============================= */
+/* SHOP */
+/* ============================= */
 
-const shopMarker = new mapboxgl.Marker({anchor:"bottom"})
+new mapboxgl.Marker({anchor:"bottom"})
 .setLngLat(shop)
 .addTo(map);
 
-/* MOTORBIKE */
+/* ============================= */
+/* BIKE */
+/* ============================= */
 
 const bikeEl = document.createElement("div");
 bikeEl.innerHTML = "🏍️";
@@ -1026,156 +1021,87 @@ bikeEl.style.fontSize = "18px";
 bikeEl.style.transition = "transform 0.2s linear";
 
 const bike = new mapboxgl.Marker({
-element:bikeEl,
-anchor:"center"
+element: bikeEl,
+anchor: "center"
 })
 .setLngLat(shop)
 .addTo(map);
 
-/* CUSTOMER MARKER */
-
-let customerMarker;
 let lastAngle = 0;
 
-/* BUTTON (HIDDEN INITIALLY) */
+/* ============================= */
+/* CENTER PIN (FIXED) */
+/* ============================= */
 
-const startBtn = document.createElement("button");
-startBtn.innerText = "Deliver Here";
-startBtn.style.position="absolute";
-startBtn.style.bottom="10px";
-startBtn.style.left="50%";
-startBtn.style.transform="translateX(-50%)";
-startBtn.style.padding="10px 18px";
-startBtn.style.background="#2e9f57";
-startBtn.style.color="white";
-startBtn.style.border="none";
-startBtn.style.borderRadius="5px";
-startBtn.style.cursor="pointer";
-startBtn.style.display="none";
+const centerPin = document.createElement("div");
+centerPin.innerHTML = "📍";
+centerPin.style.fontSize = "32px";
+centerPin.style.position = "absolute";
+centerPin.style.top = "50%";
+centerPin.style.left = "50%";
+centerPin.style.transform = "translate(-50%, -100%)";
+centerPin.style.display = "none";
+centerPin.style.pointerEvents = "none";
 
-document.getElementById("delivery-map").appendChild(startBtn);
+document.getElementById("delivery-map").appendChild(centerPin);
 
-/* FUNCTION: SHOP NEAR USER */
+/* ============================= */
+/* BUTTON */
+/* ============================= */
 
-function generateShopNearCustomer(userCoords){
-return [
-userCoords[0] + (Math.random()*0.02 - 0.01),
-userCoords[1] + (Math.random()*0.02 - 0.01)
-];
-}
+const btn = document.createElement("button");
 
-/* FUNCTION: FIT MAP */
+btn.innerText = "Set Delivery Location 📍";
 
-function fitMap(shop, customer){
-const bounds = new mapboxgl.LngLatBounds();
-bounds.extend(shop);
-bounds.extend(customer);
+btn.style.position="absolute";
+btn.style.bottom="15px";
+btn.style.left="50%";
+btn.style.transform="translateX(-50%)";
+btn.style.padding="12px 20px";
+btn.style.background="#2e9f57";
+btn.style.color="white";
+btn.style.border="none";
+btn.style.borderRadius="6px";
+btn.style.cursor="pointer";
 
-map.fitBounds(bounds,{
-padding:80,
-maxZoom:15,
-duration:1200
-});
-}
+document.getElementById("delivery-map").appendChild(btn);
 
-/* FUNCTION: BEARING */
+/* ============================= */
+/* BUTTON LOGIC */
+/* ============================= */
 
-function getBearing(start, end){
-return Math.atan2(end[1]-start[1], end[0]-start[0]) * (180/Math.PI);
-}
+btn.onclick = () => {
 
-/* FUNCTION: SMOOTH ROTATION (NO BACKWARDS FLIP) */
+/* STEP 1 → START SELECTING */
+if(!selectingLocation){
 
-function smoothRotate(newAngle){
+selectingLocation = true;
 
-let diff = newAngle - lastAngle;
+centerPin.style.display = "block";
+btn.innerText = "Confirm Location";
 
-if(diff > 180) diff -= 360;
-if(diff < -180) diff += 360;
-
-lastAngle += diff * 0.2;
-
-bikeEl.style.transform = `rotate(${lastAngle}deg)`;
-}
-
-/* DETECT LOCATION */
-
-function detectUserLocation(){
-
-navigator.geolocation.getCurrentPosition(position => {
-
-const userCoords = [
-position.coords.longitude,
-position.coords.latitude
-];
-
-shop = generateShopNearCustomer(userCoords);
-
-shopMarker.setLngLat(shop);
-bike.setLngLat(shop);
-
-/* PIN WITH TRUE TIP ANCHOR */
-
-const pin = document.createElement("div");
-pin.innerHTML = "📍";
-pin.style.fontSize = "30px";
-
-/* IMPORTANT FIX: anchor bottom */
-
-customerMarker = new mapboxgl.Marker({
-element:pin,
-anchor:"bottom",
-draggable:true
-})
-.setLngLat(userCoords)
-.addTo(map);
-
-/* SHOW BUTTON AFTER PIN */
-
-startBtn.style.display="block";
-
-/* PIN INTERACTION */
-
-customerMarker.on("dragend", ()=>{
-startBtn.style.display="block";
-});
-
-fitMap(shop,userCoords);
-
-},
-()=> alert("Location denied"));
-
-}
-
-/* MAP CLICK → PLACE PIN */
-
-map.on("click",(e)=>{
-
-if(!customerMarker){
-detectUserLocation();
 return;
 }
 
-customerMarker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+/* STEP 2 → CONFIRM LOCATION */
 
-/* SHOW BUTTON AFTER USER ACTION */
+const center = map.getCenter();
+confirmedLocation = [center.lng, center.lat];
 
-startBtn.style.display="block";
+centerPin.style.display = "none";
 
-});
+btn.innerText = "Delivering...";
+btn.disabled = true;
 
-/* BUTTON CLICK */
-
-startBtn.onclick=()=>{
-
-const destination = customerMarker.getLngLat();
-getRoute([destination.lng,destination.lat]);
+startDelivery(confirmedLocation);
 
 };
 
-/* GET ROUTE */
+/* ============================= */
+/* ROUTE */
+/* ============================= */
 
-async function getRoute(destination){
+async function startDelivery(destination){
 
 const url =
 `https://api.mapbox.com/directions/v5/mapbox/driving/`+
@@ -1186,6 +1112,8 @@ const res = await fetch(url);
 const data = await res.json();
 
 const route = data.routes[0].geometry.coordinates;
+
+/* DRAW ROUTE */
 
 if(map.getSource("route")){
 map.removeLayer("route");
@@ -1213,27 +1141,45 @@ paint:{
 }
 });
 
-setTimeout(()=>{
+/* START ANIMATION */
+
 animateBike(route);
-},500);
 
 }
 
-/* BIKE ANIMATION */
+/* ============================= */
+/* BIKE MOVEMENT */
+/* ============================= */
+
+function getBearing(a,b){
+return Math.atan2(b[1]-a[1], b[0]-a[0]) * (180/Math.PI);
+}
+
+function smoothRotate(newAngle){
+
+let diff = newAngle - lastAngle;
+
+if(diff > 180) diff -= 360;
+if(diff < -180) diff += 360;
+
+lastAngle += diff * 0.2;
+
+bikeEl.style.transform = `rotate(${lastAngle}deg)`;
+}
 
 function animateBike(route){
 
-let index=0;
+let i = 0;
 
 function move(){
 
-if(index >= route.length-1){
-alert("Delivery Arrived!");
+if(i >= route.length-1){
+btn.innerText = "Delivered ✅";
 return;
 }
 
-let start = route[index];
-let end = route[index+1];
+let start = route[i];
+let end = route[i+1];
 
 let progress = 0;
 
@@ -1246,25 +1192,29 @@ let lat = start[1] + (end[1]-start[1])*progress;
 
 bike.setLngLat([lng,lat]);
 
-/* SMOOTH FORWARD ROTATION */
+/* ROTATION */
+smoothRotate(getBearing(start,end));
 
-const angle = getBearing(start,end);
-smoothRotate(angle);
+/* FOLLOW CAMERA */
+map.easeTo({
+center: [lng,lat],
+duration: 200
+});
 
-/* ERASE PASSED ROUTE */
+/* CUT ROUTE */
 
 map.getSource("route").setData({
 type:"Feature",
 geometry:{
 type:"LineString",
-coordinates:route.slice(index)
+coordinates:route.slice(i)
 }
 });
 
 if(progress >= 1){
 clearInterval(segment);
-index++;
-setTimeout(move,20);
+i++;
+setTimeout(move,10);
 }
 
 },20);
@@ -1276,7 +1226,6 @@ move();
 }
 
 });
-
 </script>
 
 
