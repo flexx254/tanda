@@ -989,11 +989,13 @@ document.getElementById("pay-visa").onclick=()=>processPayment("Visa");
 
 updateCart();
 
+
+
 /* ===== DELIVERY MAP DEMO ===== */
 
 window.addEventListener("load", function(){
 
-mapboxgl.accessToken = 'pk.eyJ1IjoibW9zZXRpMjU0IiwiYSI6ImNsanh1bWRzNTB5ZG0zZnA0Z3d3Z3A3amsifQ.ff8FbR0WNQ2-yBIuKb9zCw';
+mapboxgl.accessToken = 'YOUR_MAPBOX_TOKEN';
 
 const map = new mapboxgl.Map({
 container: 'delivery-map',
@@ -1010,13 +1012,9 @@ map.resize();
 
 let shop = [36.8219, -1.2921];
 
-/* CREATE SHOP MARKER */
+/* SHOP MARKER */
 
-const shopEl = document.createElement("div");
-shopEl.innerHTML = "🏪";
-shopEl.style.fontSize = "26px";
-
-const shopMarker = new mapboxgl.Marker(shopEl)
+const shopMarker = new mapboxgl.Marker({anchor:"bottom"})
 .setLngLat(shop)
 .addTo(map);
 
@@ -1024,132 +1022,25 @@ const shopMarker = new mapboxgl.Marker(shopEl)
 
 const bikeEl = document.createElement("div");
 bikeEl.innerHTML = "🏍️";
-bikeEl.style.fontSize = "24px";
-bikeEl.style.transition = "transform 0.15s linear";
+bikeEl.style.fontSize = "18px";
+bikeEl.style.transition = "transform 0.2s linear";
 
-const bike = new mapboxgl.Marker(bikeEl)
+const bike = new mapboxgl.Marker({
+element:bikeEl,
+anchor:"center"
+})
 .setLngLat(shop)
 .addTo(map);
 
 /* CUSTOMER MARKER */
 
 let customerMarker;
+let lastAngle = 0;
 
-/* FUNCTION: MOVE SHOP NEAR CUSTOMER */
-
-function generateShopNearCustomer(userCoords){
-
-const offsetLng = userCoords[0] + (Math.random()*0.02 - 0.01);
-const offsetLat = userCoords[1] + (Math.random()*0.02 - 0.01);
-
-return [offsetLng, offsetLat];
-
-}
-
-/* FUNCTION: FIT MAP TO SHOW BOTH */
-
-function fitMap(shop, customer){
-
-const bounds = new mapboxgl.LngLatBounds();
-
-bounds.extend(shop);
-bounds.extend(customer);
-
-map.fitBounds(bounds,{
-padding:80,
-maxZoom:15,
-duration:1200
-});
-
-}
-
-/* FUNCTION: CALCULATE DIRECTION */
-
-function getBearing(start, end){
-
-const lngDiff = end[0] - start[0];
-const latDiff = end[1] - start[1];
-
-return Math.atan2(latDiff, lngDiff) * (180 / Math.PI);
-
-}
-
-/* ===== DETECT USER LOCATION (ON DEMAND) ===== */
-
-function detectUserLocation(){
-
-navigator.geolocation.getCurrentPosition(position => {
-
-const userCoords = [
-position.coords.longitude,
-position.coords.latitude
-];
-
-/* MOVE SHOP NEAR USER */
-
-shop = generateShopNearCustomer(userCoords);
-
-shopMarker.setLngLat(shop);
-bike.setLngLat(shop);
-
-/* CREATE CUSTOMER PIN WITH LABEL */
-
-const container = document.createElement("div");
-container.style.display = "flex";
-container.style.flexDirection = "column";
-container.style.alignItems = "center";
-
-const label = document.createElement("div");
-label.innerText = "Your Location";
-label.style.background = "#2e9f57";
-label.style.color = "white";
-label.style.padding = "3px 8px";
-label.style.borderRadius = "4px";
-label.style.fontSize = "12px";
-label.style.marginBottom = "4px";
-
-const person = document.createElement("div");
-person.innerHTML = "📍";
-person.style.fontSize = "28px";
-
-container.appendChild(label);
-container.appendChild(person);
-
-customerMarker = new mapboxgl.Marker({
-element:container,
-draggable:true
-})
-.setLngLat(userCoords)
-.addTo(map);
-
-fitMap(shop,userCoords);
-
-},
-() => {
-
-alert("Location permission denied");
-
-});
-
-}
-
-/* CLICK MAP TO MOVE PIN */
-
-map.on("click",(e)=>{
-
-if(customerMarker){
-
-customerMarker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
-
-}
-
-});
-
-/* START DELIVERY BUTTON */
+/* BUTTON (HIDDEN INITIALLY) */
 
 const startBtn = document.createElement("button");
 startBtn.innerText = "Deliver Here";
-
 startBtn.style.position="absolute";
 startBtn.style.bottom="10px";
 startBtn.style.left="50%";
@@ -1160,26 +1051,124 @@ startBtn.style.color="white";
 startBtn.style.border="none";
 startBtn.style.borderRadius="5px";
 startBtn.style.cursor="pointer";
+startBtn.style.display="none";
 
 document.getElementById("delivery-map").appendChild(startBtn);
 
-/* START DELIVERY */
+/* FUNCTION: SHOP NEAR USER */
 
-startBtn.onclick=()=>{
+function generateShopNearCustomer(userCoords){
+return [
+userCoords[0] + (Math.random()*0.02 - 0.01),
+userCoords[1] + (Math.random()*0.02 - 0.01)
+];
+}
 
-/* FIRST CLICK → ASK LOCATION */
+/* FUNCTION: FIT MAP */
 
-if(!customerMarker){
+function fitMap(shop, customer){
+const bounds = new mapboxgl.LngLatBounds();
+bounds.extend(shop);
+bounds.extend(customer);
 
-detectUserLocation();
-return;
+map.fitBounds(bounds,{
+padding:80,
+maxZoom:15,
+duration:1200
+});
+}
+
+/* FUNCTION: BEARING */
+
+function getBearing(start, end){
+return Math.atan2(end[1]-start[1], end[0]-start[0]) * (180/Math.PI);
+}
+
+/* FUNCTION: SMOOTH ROTATION (NO BACKWARDS FLIP) */
+
+function smoothRotate(newAngle){
+
+let diff = newAngle - lastAngle;
+
+if(diff > 180) diff -= 360;
+if(diff < -180) diff += 360;
+
+lastAngle += diff * 0.2;
+
+bikeEl.style.transform = `rotate(${lastAngle}deg)`;
+}
+
+/* DETECT LOCATION */
+
+function detectUserLocation(){
+
+navigator.geolocation.getCurrentPosition(position => {
+
+const userCoords = [
+position.coords.longitude,
+position.coords.latitude
+];
+
+shop = generateShopNearCustomer(userCoords);
+
+shopMarker.setLngLat(shop);
+bike.setLngLat(shop);
+
+/* PIN WITH TRUE TIP ANCHOR */
+
+const pin = document.createElement("div");
+pin.innerHTML = "📍";
+pin.style.fontSize = "30px";
+
+/* IMPORTANT FIX: anchor bottom */
+
+customerMarker = new mapboxgl.Marker({
+element:pin,
+anchor:"bottom",
+draggable:true
+})
+.setLngLat(userCoords)
+.addTo(map);
+
+/* SHOW BUTTON AFTER PIN */
+
+startBtn.style.display="block";
+
+/* PIN INTERACTION */
+
+customerMarker.on("dragend", ()=>{
+startBtn.style.display="block";
+});
+
+fitMap(shop,userCoords);
+
+},
+()=> alert("Location denied"));
 
 }
 
-/* SECOND CLICK → START DELIVERY */
+/* MAP CLICK → PLACE PIN */
+
+map.on("click",(e)=>{
+
+if(!customerMarker){
+detectUserLocation();
+return;
+}
+
+customerMarker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+
+/* SHOW BUTTON AFTER USER ACTION */
+
+startBtn.style.display="block";
+
+});
+
+/* BUTTON CLICK */
+
+startBtn.onclick=()=>{
 
 const destination = customerMarker.getLngLat();
-
 getRoute([destination.lng,destination.lat]);
 
 };
@@ -1198,14 +1187,10 @@ const data = await res.json();
 
 const route = data.routes[0].geometry.coordinates;
 
-/* remove old route */
-
 if(map.getSource("route")){
 map.removeLayer("route");
 map.removeSource("route");
 }
-
-/* draw route */
 
 map.addSource("route",{
 type:"geojson",
@@ -1222,10 +1207,6 @@ map.addLayer({
 id:"route",
 type:"line",
 source:"route",
-layout:{
-"line-cap":"round",
-"line-join":"round"
-},
 paint:{
 "line-color":"#2e9f57",
 "line-width":5
@@ -1234,11 +1215,11 @@ paint:{
 
 setTimeout(()=>{
 animateBike(route);
-},1000);
+},500);
 
 }
 
-/* MOVE BIKE */
+/* BIKE ANIMATION */
 
 function animateBike(route){
 
@@ -1258,38 +1239,32 @@ let progress = 0;
 
 const segment = setInterval(()=>{
 
-progress += 0.005;
+progress += 0.01;
 
 let lng = start[0] + (end[0]-start[0])*progress;
 let lat = start[1] + (end[1]-start[1])*progress;
 
 bike.setLngLat([lng,lat]);
 
-/* ROTATE BIKE */
+/* SMOOTH FORWARD ROTATION */
 
 const angle = getBearing(start,end);
-bikeEl.style.transform = `rotate(${angle}deg)`;
+smoothRotate(angle);
 
-/* ERASE TRAVELLED ROUTE */
-
-const remaining = route.slice(index);
+/* ERASE PASSED ROUTE */
 
 map.getSource("route").setData({
 type:"Feature",
 geometry:{
 type:"LineString",
-coordinates:remaining
+coordinates:route.slice(index)
 }
 });
 
 if(progress >= 1){
-
 clearInterval(segment);
-
 index++;
-
 setTimeout(move,20);
-
 }
 
 },20);
@@ -1301,9 +1276,6 @@ move();
 }
 
 });
-
-
-
 
 </script>
 
