@@ -989,7 +989,6 @@ document.getElementById("pay-visa").onclick=()=>processPayment("Visa");
 
 updateCart();
 
-
 /* ===== DELIVERY MAP DEMO ===== */
 
 window.addEventListener("load", function(){
@@ -1075,7 +1074,9 @@ return Math.atan2(latDiff, lngDiff) * (180 / Math.PI);
 
 }
 
-/* DETECT USER LOCATION */
+/* ===== DETECT USER LOCATION (ON DEMAND) ===== */
+
+function detectUserLocation(){
 
 navigator.geolocation.getCurrentPosition(position => {
 
@@ -1121,20 +1122,16 @@ draggable:true
 .setLngLat(userCoords)
 .addTo(map);
 
-fitMap(shop, userCoords);
+fitMap(shop,userCoords);
 
 },
 () => {
 
-/* fallback if location blocked */
-
-const fallback = [36.8219, -1.2921];
-
-customerMarker = new mapboxgl.Marker({draggable:true})
-.setLngLat(fallback)
-.addTo(map);
+alert("Location permission denied");
 
 });
+
+}
 
 /* CLICK MAP TO MOVE PIN */
 
@@ -1170,10 +1167,16 @@ document.getElementById("delivery-map").appendChild(startBtn);
 
 startBtn.onclick=()=>{
 
+/* FIRST CLICK → ASK LOCATION */
+
 if(!customerMarker){
-alert("Location not detected yet");
+
+detectUserLocation();
 return;
+
 }
+
+/* SECOND CLICK → START DELIVERY */
 
 const destination = customerMarker.getLngLat();
 
@@ -1298,6 +1301,10 @@ move();
 }
 
 });
+
+
+
+
 </script>
 
 
