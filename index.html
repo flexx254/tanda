@@ -1065,9 +1065,7 @@ return Math.atan2(latDiff, lngDiff) * (180 / Math.PI);
 
 }
 
-/* ===== DETECT USER LOCATION (ON DEMAND) ===== */
-
-function detectUserLocation(){
+/* DETECT USER LOCATION */
 
 navigator.geolocation.getCurrentPosition(position => {
 
@@ -1113,16 +1111,20 @@ draggable:true
 .setLngLat(userCoords)
 .addTo(map);
 
-fitMap(shop,userCoords);
+fitMap(shop, userCoords);
 
 },
 () => {
 
-alert("Location permission denied");
+/* fallback if location blocked */
+
+const fallback = [36.8219, -1.2921];
+
+customerMarker = new mapboxgl.Marker({draggable:true})
+.setLngLat(fallback)
+.addTo(map);
 
 });
-
-}
 
 /* CLICK MAP TO MOVE PIN */
 
@@ -1158,16 +1160,10 @@ document.getElementById("delivery-map").appendChild(startBtn);
 
 startBtn.onclick=()=>{
 
-/* FIRST CLICK → ASK LOCATION */
-
 if(!customerMarker){
-
-detectUserLocation();
+alert("Location not detected yet");
 return;
-
 }
-
-/* SECOND CLICK → START DELIVERY */
 
 const destination = customerMarker.getLngLat();
 
@@ -1292,6 +1288,7 @@ move();
 }
 
 });
+
 </script>
 
 
