@@ -57,36 +57,32 @@ font-weight:500;
 }
 
 /* ===== HERO ===== */
-
 .hero{
-background:
-linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),
-url("https://images.unsplash.com/photo-1512453979798-5ea266f8880c");
-background-size:cover;
-background-position:center;
+position:relative;
+background:#0f1b2a;
 color:white;
 text-align:center;
 padding:120px 20px;
+overflow:hidden;
 }
 
-.hero h1{
-font-size:42px;
-margin-bottom:10px;
+#particles-js{
+position:absolute;
+width:100%;
+height:100%;
+top:0;
+left:0;
+z-index:0;
 }
 
-.hero p{
-font-size:18px;
-max-width:650px;
-margin:auto;
-margin-bottom:30px;
-}
-
+.hero h1,
+.hero h3,
+.hero p,
 .hero-buttons{
-display:flex;
-justify-content:center;
-gap:15px;
-flex-wrap:wrap;
-}
+position:relative;
+z-index:1;
+  }
+
 
 .btn{
 padding:12px 25px;
@@ -510,16 +506,37 @@ overflow:hidden;
 <a href="#projects">Projects</a>  
 <a href="#pricing">Pricing</a>  
 <a href="#contact">Contact</a>  
-</div>  </div>  </div><!-- HERO --><section class="hero"><h1>Web Development & Automation<br>Solutions for Businesses</h1><h3 style="font-weight:400;margin-bottom:15px;">  
-Full-Stack Developer • Payment Systems • Business Automation  
-</h3>  <p>  
-I help businesses build websites, payment systems and automation tools  
-that save time and increase revenue.  
-</p><div class="hero-buttons"><a class="btn btn-green" href="https://wa.me/254728639425">  
-<i class="fa-brands fa-whatsapp"></i> Get a Quote on WhatsApp  
-</a><a class="btn btn-light" href="#">  
-View My Work  
-</a></div></section><!-- SERVICES --><section id="services"><div class="container"><h2>My Services</h2><div class="services-grid"><div class="service-card">  
+</div>  </div>  </div>
+  
+  <!-- HERO -->
+<section class="hero">
+
+<div id="particles-js"></div>
+
+<h1>Web Development & Automation<br>Solutions for Businesses</h1>
+
+<h3 style="font-weight:400;margin-bottom:15px;">
+Full-Stack Developer • Payment Systems • Business Automation
+</h3>
+
+<p>
+I help businesses build websites, payment systems and automation tools
+that save time and increase revenue.
+</p>
+
+<div class="hero-buttons">
+<a class="btn btn-green" href="https://wa.me/254728639425">
+<i class="fa-brands fa-whatsapp"></i> Get a Quote on WhatsApp
+</a>
+
+<a class="btn btn-light" href="#">
+View My Work
+</a>
+</div>
+
+</section>
+  <!-- SERVICES -->
+<section id="services"><div class="container"><h2>My Services</h2><div class="services-grid"><div class="service-card">  
 <i class="fa-solid fa-desktop"></i>  
 <h3>Website Development</h3>  
 <p>M-Pesa & Stripe Solutions</p>  
@@ -614,7 +631,11 @@ View My Work
 </a>  
 <footer>  
 © 2026 Felix Web Systems  
-</footer>  <script>  
+</footer> 
+  
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  
+  <script>  
 const hamburger = document.getElementById("hamburger");  
 const menu = document.getElementById("menu");  
 const menuLinks = document.querySelectorAll("#menu a");  
@@ -677,5 +698,38 @@ menuLinks.forEach(link => {
     }, 800); // 0.8s matches scroll animation duration  
   });  
 });  
-</script>  </body>  
+    
+</script>  
+<script>
+particlesJS("particles-js", {
+  particles: {
+    number: { value: 70 },
+    color: { value: "#ffffff" },
+    shape: { type: "circle" },
+    opacity: { value: 0.7 },
+    size: { value: 3 },
+    line_linked: {
+      enable: true,
+      distance: 150,
+      color: "#ffffff",
+      opacity: 0.5,
+      width: 1
+    },
+    move: {
+      enable: true,
+      speed: 2
+    }
+  },
+  interactivity: {
+    events: {
+      onhover: {
+        enable: true,
+        mode: "grab"
+      }
+    }
+  },
+  retina_detect: true
+});
+</script>
+</body>  
 </html>
