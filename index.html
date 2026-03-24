@@ -491,7 +491,21 @@ overflow:hidden;
   color: #cce3d0; /* soft green to match theme */
   line-height: 1.1;
 }
-</style></head><body>
+
+/* ===== SCROLL REVEAL ===== */
+
+.reveal{
+opacity:0;
+transform:translateY(40px);
+transition:all .8s ease;
+}
+
+.reveal.show{
+opacity:1;
+transform:translateY(0);
+}
+</style>
+</head><body>
 
   <div id="top"></div>  
 <div id="pageLoader">  
@@ -554,7 +568,7 @@ View My Work
 
 </section>
   <!-- SERVICES -->
-<section id="services"><div class="container"><h2>My Services</h2><div class="services-grid"><div class="service-card">  
+<section id="services" class = "reveal"><div class="container"><h2>My Services</h2><div class="services-grid"><div class="service-card">  
 <i class="fa-solid fa-desktop"></i>  
 <h3>Website Development</h3>  
 <p>M-Pesa & Stripe Solutions</p>  
@@ -572,7 +586,7 @@ View My Work
 <p>Tracking & Management Tools</p>  
 </div></div></div></section><!-- PROJECTS -->
   
-  <section id="projects">
+  <section id="projects" class = "reveal">
 <div class="container">
 
 <h2>Example Projects</h2>
@@ -627,7 +641,7 @@ View My Work
 </section>
   
   
-  <!-- PRICING --><section id="pricing"><div class="container"><div class="pricing-row"><div class="price-box">  
+  <!-- PRICING --><section id="pricing" class = "reveal"><div class="container"><div class="pricing-row"><div class="price-box">  
 <h3>Business Website</h3>  
 <p class="price">From KSh 15,000</p>  
 </div><div class="price-box">  
@@ -636,7 +650,7 @@ View My Work
 </div><div class="price-box">  
 <h3>Website Fixing</h3>  
 <p class="price">From KSh 2,000</p>  
-</div></div></div></section><!-- CONTACT --><section id="contact" class="contact"><div class="container"><h2>Get In Touch</h2><p>Need a website or automation system? Contact me today!</p><div class="contact-buttons"><a class="btn btn-whatsapp" href="https://wa.me/254728639425">  
+</div></div></div></section><!-- CONTACT --><section id="contact"  class="contact reveal"><div class="container"><h2>Get In Touch</h2><p>Need a website or automation system? Contact me today!</p><div class="contact-buttons"><a class="btn btn-whatsapp" href="https://wa.me/254728639425">  
 <i class="fa-brands fa-whatsapp"></i> WhatsApp  
 </a><a class="btn btn-call" href="tel:+254728639425">  
 <i class="fa-solid fa-phone"></i> Call  
@@ -716,6 +730,28 @@ menuLinks.forEach(link => {
     }, 800); // 0.8s matches scroll animation duration  
   });  
 });  
+
+    /* ===== SCROLL REVEAL ===== */
+
+const reveals = document.querySelectorAll(".reveal");
+
+const observer = new IntersectionObserver(entries => {
+
+entries.forEach(entry => {
+
+if(entry.isIntersecting){
+
+entry.target.classList.add("show");
+
+}
+
+});
+
+},{
+threshold:0.15
+});
+
+reveals.forEach(el => observer.observe(el));
     
 </script>  
 <script>
