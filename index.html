@@ -84,11 +84,23 @@ z-index:1;
   }
 
 
+.hero-buttons{
+display:flex;
+justify-content:center;
+gap:15px;
+flex-wrap:wrap;
+margin-top:25px;
+}
+
 .btn{
-padding:12px 25px;
-border-radius:5px;
+padding:13px 26px;
+border-radius:6px;
 font-weight:bold;
 text-decoration:none;
+display:inline-flex;
+align-items:center;
+gap:8px;
+transition:all .25s ease;
 }
 
 .btn-green{
@@ -97,9 +109,15 @@ color:white;
 }
 
 .btn-light{
-background:#e6e6e6;
+background:white;
 color:#333;
 }
+
+.btn:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 20px rgba(0,0,0,.35);
+  }
+
 
 /* ===== SERVICES ===== */
 
