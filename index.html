@@ -702,35 +702,49 @@ window.addEventListener("load", () => {
   }, 700); // brief loader for smooth effect  
 });  
   
-/* ===== MENU LINK CLICK + SCROLL WITH LOADER ===== */  
-menuLinks.forEach(link => {  
-  link.addEventListener("click", function(e) {  
-    const targetId = this.getAttribute("href");  
-    if (!targetId.startsWith("#")) return;  
-  
-    e.preventDefault();  
-    const target = document.querySelector(targetId);  
-    if (!target) return;  
-  
-    // Close mobile menu  
-    menu.classList.remove("show");  
-    hamburger.classList.remove("active");  
-  
-    // Show loader and disable scrolling  
-    loader.classList.remove("hide");  
-    document.body.classList.add("loading");  
-  
-    // Smooth scroll using scrollIntoView with promise-like delay  
-    target.scrollIntoView({ behavior: "smooth", block: "start" });  
-  
-    // Always hide loader after a short delay (covers first and last sections)  
-    setTimeout(() => {  
-      loader.classList.add("hide");  
-      document.body.classList.remove("loading");  
-    }, 800); // 0.8s matches scroll animation duration  
-  });  
-});  
+menuLinks.forEach(link => {
 
+  link.addEventListener("click", function(e) {
+
+    const targetId = this.getAttribute("href");
+    if (!targetId.startsWith("#")) return;
+
+    e.preventDefault();
+
+    const target = document.querySelector(targetId);
+    if (!target) return;
+
+    // close mobile menu
+    menu.classList.remove("show");
+    hamburger.classList.remove("active");
+
+    // show loader
+    loader.classList.remove("hide");
+    document.body.classList.add("loading");
+
+    // smooth scroll
+    target.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+    // force reveal for elements inside the section
+    const elements = target.querySelectorAll(".reveal");
+    elements.forEach(el => {
+      setTimeout(() => {
+        el.classList.add("show");
+      }, 200);
+    });
+
+    // hide loader
+    setTimeout(() => {
+      loader.classList.add("hide");
+      document.body.classList.remove("loading");
+    }, 800);
+
+  });
+
+});
     /* ===== SCROLL REVEAL ===== */
 
 const reveals = document.querySelectorAll(".reveal");
