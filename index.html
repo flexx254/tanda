@@ -442,17 +442,36 @@ pointer-events:none;
 /* code loader */
 
 .code-loader{
-font-size:40px;
-font-weight:bold;
-color:#2e9f57;
 display:flex;
-gap:6px;
-font-family:monospace;
+gap:22px; /* more spacing between symbols */
 }
 
+/* spheres */
+
 .code-loader span{
-animation:blink 1.2s infinite;
+
+width:60px;
+height:60px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:#274b70; /* theme color */
+color:white;
+
+font-size:28px;
+font-weight:bold;
+font-family:monospace;
+
+border-radius:50%;
+
+box-shadow:0 8px 18px rgba(0,0,0,.2);
+
+animation:loaderBounce 1.2s infinite ease-in-out;
 }
+
+/* animation delays */
 
 .code-loader span:nth-child(2){
 animation-delay:.2s;
@@ -462,15 +481,21 @@ animation-delay:.2s;
 animation-delay:.4s;
 }
 
-@keyframes blink{
+/* animation */
 
-0%{opacity:.2; transform:translateY(0);}
+@keyframes loaderBounce{
 
-50%{opacity:1; transform:translateY(-6px);}
-
-100%{opacity:.2; transform:translateY(0);}
-
+0%,100%{
+transform:translateY(0);
+opacity:.7;
 }
+
+50%{
+transform:translateY(-12px);
+opacity:1;
+}
+
+  }
 
 body.loading{
 overflow:hidden;
@@ -508,13 +533,13 @@ transform:translateY(0);
 </head><body>
 
   <div id="top"></div>  
-<div id="pageLoader">  
-  <div class="code-loader">  
-    <span>&lt;</span>  
-    <span>/</span>  
-    <span>&gt;</span>  
-  </div>  
-</div>  
+<div id="pageLoader">
+  <div class="code-loader">
+    <div class="code-ball">&lt;</div>
+    <div class="code-ball">/</div>
+    <div class="code-ball">&gt;</div>
+  </div>
+</div>
   <!-- NAVBAR -->  
 <div class="navbar">  <div class="nav-container">  
   
