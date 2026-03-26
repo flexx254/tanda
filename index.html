@@ -439,36 +439,32 @@ opacity:0;
 pointer-events:none;
 }
 
-/* code loader */
+/* loader container */
 
 .code-loader{
 display:flex;
-gap:22px; /* more spacing between symbols */
+gap:18px;
+font-family:monospace;
 }
 
 /* spheres */
 
 .code-loader span{
-
-width:60px;
-height:60px;
-
+width:55px;
+height:55px;
 display:flex;
 align-items:center;
 justify-content:center;
 
-background:#274b70; /* theme color */
-color:white;
+background:#274b70; /* theme colour */
 
-font-size:28px;
+color:white;
+font-size:26px;
 font-weight:bold;
-font-family:monospace;
 
 border-radius:50%;
 
-box-shadow:0 8px 18px rgba(0,0,0,.2);
-
-animation:loaderBounce 1.2s infinite ease-in-out;
+animation:bounce 1.2s infinite;
 }
 
 /* animation delays */
@@ -481,22 +477,30 @@ animation-delay:.2s;
 animation-delay:.4s;
 }
 
-/* animation */
+/* bounce animation */
 
-@keyframes loaderBounce{
+@keyframes bounce{
 
-0%,100%{
+0%{
 transform:translateY(0);
-opacity:.7;
+opacity:.6;
 }
 
 50%{
-transform:translateY(-12px);
+transform:translateY(-10px);
 opacity:1;
 }
 
-  }
+100%{
+transform:translateY(0);
+opacity:.6;
+}
 
+}
+
+body.loading{
+overflow:hidden;
+  }
 body.loading{
 overflow:hidden;
 }.logo-container {
@@ -535,9 +539,9 @@ transform:translateY(0);
   <div id="top"></div>  
 <div id="pageLoader">
   <div class="code-loader">
-    <div class="code-ball">&lt;</div>
-    <div class="code-ball">/</div>
-    <div class="code-ball">&gt;</div>
+<span>&lt;</span>
+<span>/</span>
+<span>&gt;</span>
   </div>
 </div>
   <!-- NAVBAR -->  
