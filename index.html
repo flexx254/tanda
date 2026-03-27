@@ -535,7 +535,7 @@ opacity:1;
 transform:translateY(0);
 }
 
-  .see-more{
+.see-more{
 display:flex;
 flex-direction:column;
 align-items:center;
@@ -546,13 +546,25 @@ margin-top:10px;
 .see-more i{
 font-size:14px;
 line-height:10px;
-color:#000;
+color:#f1c40f; /* yellow arrows */
 transition:transform .3s ease;
-  }
+}
 
-  .service-card.open .see-more i{
+/* rotate arrows when open */
+.service-card.open .see-more i{
 transform:rotate(180deg);
   }
+
+  .more-content{
+max-height:0;
+overflow:hidden;
+transition:max-height .4s ease;
+  }
+
+  .service-card.open .more-content{
+max-height:200px;
+margin-top:10px;
+}
 </style>
 </head><body>
 
