@@ -1226,14 +1226,13 @@ particlesJS("particles-js", {
   retina_detect: true
 });
 
-
-  document.querySelectorAll(".see-more").forEach(button => {
+document.querySelectorAll(".see-more").forEach(button => {
 
 button.addEventListener("click", function(){
 
-const card = this.closest(".service-card");
+const card = this.closest(".service-card, .project-card");
 
-const opened = document.querySelector(".service-card.open");
+const opened = document.querySelector(".service-card.open, .project-card.open");
 
 if(opened && opened !== card){
 opened.classList.remove("open");
@@ -1244,6 +1243,7 @@ card.classList.toggle("open");
 });
 
 });
+  
 </script>
 </body>  
 </html>
