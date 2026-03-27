@@ -540,31 +540,47 @@ display:flex;
 flex-direction:column;
 align-items:center;
 cursor:pointer;
-margin-top:10px;
+margin-top:12px;
+gap:2px;
 }
 
 .see-more i{
 font-size:14px;
 line-height:10px;
-color:#f1c40f; /* yellow arrows */
-transition:transform .3s ease;
-}
+color:#f1c40f;
+transition:transform .35s ease, opacity .3s ease;
+  }
 
 /* rotate arrows when open */
 .service-card.open .see-more i{
 transform:rotate(180deg);
   }
 
-  .more-content{
+.more-content{
 max-height:0;
 overflow:hidden;
-transition:max-height .4s ease;
+opacity:0;
+transform:translateY(-5px);
+transition:max-height .45s ease, opacity .35s ease, transform .35s ease;
   }
 
   .service-card.open .more-content{
 max-height:200px;
 margin-top:10px;
 }
+
+
+  .service-card.open .more-content{
+max-height:250px;
+opacity:1;
+transform:translateY(0);
+margin-top:10px;
+  }
+
+
+  .service-card.open .see-more i{
+transform:rotate(180deg);
+  }
 </style>
 </head><body>
 
@@ -1006,7 +1022,13 @@ particlesJS("particles-js", {
 
 button.addEventListener("click", function(){
 
-const card = this.closest(".service-card, .project-card");
+const card = this.closest(".service-card");
+
+const opened = document.querySelector(".service-card.open");
+
+if(opened && opened !== card){
+opened.classList.remove("open");
+}
 
 card.classList.toggle("open");
 
