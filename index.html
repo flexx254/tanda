@@ -1285,6 +1285,41 @@ particlesJS("particles-js", {
   retina_detect: true
 });
 
+/* ===== ARROW SCROLL ANIMATION ===== */
+
+const cards = document.querySelectorAll(".service-card, .project-card");
+
+const arrowObserver = new IntersectionObserver((entries) => {
+
+entries.forEach(entry => {
+
+if(entry.isIntersecting){
+
+const arrows = entry.target.querySelector(".see-more");
+
+if(arrows && !arrows.classList.contains("animate")){
+
+setTimeout(()=>{
+arrows.classList.add("animate");
+},300);
+
+}
+
+}
+
+});
+
+},{
+threshold:0.2
+});
+
+cards.forEach(card => {
+arrowObserver.observe(card);
+});
+
+
+/* ===== OPEN / CLOSE CARD ===== */
+
 document.querySelectorAll(".see-more").forEach(button => {
 
 button.addEventListener("click", function(){
@@ -1293,10 +1328,12 @@ const card = this.closest(".service-card, .project-card");
 
 const opened = document.querySelector(".service-card.open, .project-card.open");
 
+/* close another open card */
 if(opened && opened !== card){
 opened.classList.remove("open");
 }
 
+/* toggle this one */
 card.classList.toggle("open");
 
 });
