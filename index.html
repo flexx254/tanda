@@ -547,10 +547,59 @@ gap:2px;
 .see-more i{
 font-size:14px;
 line-height:10px;
-color:#f1c40f;
-transition:transform .35s ease, opacity .3s ease;
-  }
+color:#bbb;
+opacity:.4;
+transition:transform .35s ease, opacity .3s ease, color .3s ease;
+}
 
+/* animation trigger */
+.see-more.animate i:first-child{
+animation:arrow1 .8s forwards;
+}
+
+.see-more.animate i:last-child{
+animation:arrow2 .8s .5s forwards;
+}
+
+/* first arrow */
+@keyframes arrow1{
+0%{
+color:#bbb;
+opacity:.3;
+transform:translateY(0);
+}
+
+50%{
+color:#2ecc71;
+opacity:1;
+transform:translateY(4px);
+}
+
+100%{
+color:#2ecc71;
+opacity:1;
+}
+}
+
+/* second arrow */
+@keyframes arrow2{
+0%{
+color:#bbb;
+opacity:.3;
+transform:translateY(0);
+}
+
+50%{
+color:#2ecc71;
+opacity:1;
+transform:translateY(4px);
+}
+
+100%{
+color:#2ecc71;
+opacity:1;
+}
+  }
 /* rotate arrows when open */
 .service-card.open .see-more i{
 transform:rotate(180deg);
