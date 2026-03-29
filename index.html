@@ -1362,11 +1362,22 @@ entries.forEach(entry => {
 if(entry.isIntersecting){
 
 const arrows = entry.target.querySelector(".see-more");
+const text = entry.target.querySelector(".see-text");
 
 if(arrows && !arrows.classList.contains("animate")){
 
 setTimeout(()=>{
+
 arrows.classList.add("animate");
+
+/* show text during animation */
+if(text) text.textContent = "See more";
+
+/* remove animation after loops finish */
+setTimeout(()=>{
+arrows.classList.remove("animate");
+},4200);
+
 },300);
 
 }
@@ -1391,21 +1402,40 @@ document.querySelectorAll(".see-more").forEach(button => {
 button.addEventListener("click", function(){
 
 const card = this.closest(".service-card, .project-card");
+const text = this.querySelector(".see-text");
 
 const opened = document.querySelector(".service-card.open, .project-card.open");
 
 /* close another open card */
+
 if(opened && opened !== card){
+
 opened.classList.remove("open");
+
+const oldText = opened.querySelector(".see-text");
+if(oldText) oldText.textContent = "See more";
+
 }
 
 /* toggle this one */
+
 card.classList.toggle("open");
 
+/* change text */
+
+if(card.classList.contains("open")){
+
+if(text) text.textContent = "See less";
+
+}else{
+
+if(text) text.textContent = "See more";
+
+}
+
 });
 
 });
-  
 </script>
 </body>  
 </html>
