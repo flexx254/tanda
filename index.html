@@ -691,6 +691,108 @@ top:0;
   }
 
 
+
+
+  .purpose-section{
+padding:80px 20px;
+}
+
+.purpose-container{
+max-width:1200px;
+margin:auto;
+display:grid;
+grid-template-columns:1fr 1fr;
+align-items:center;
+gap:60px;
+}
+
+/* IMAGE SIDE */
+
+.purpose-images{
+position:relative;
+height:450px;
+}
+
+/* circles */
+
+.circle{
+position:absolute;
+overflow:hidden;
+border-radius:50%;
+}
+
+.circle img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* big circle */
+
+.circle-big{
+width:320px;
+height:320px;
+top:0;
+left:0;
+}
+
+/* small circle */
+
+.circle-small{
+width:220px;
+height:220px;
+bottom:0;
+left:160px;
+}
+
+/* CONTENT */
+
+.purpose-content h2{
+margin-bottom:20px;
+}
+
+.purpose-intro{
+margin-bottom:30px;
+line-height:1.6;
+}
+
+.purpose-block{
+margin-bottom:25px;
+}
+
+.purpose-block h3{
+margin-bottom:6px;
+}
+
+.purpose-block ul{
+padding-left:18px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.purpose-container{
+grid-template-columns:1fr;
+}
+
+.purpose-images{
+height:360px;
+margin-bottom:30px;
+}
+
+.circle-big{
+width:240px;
+height:240px;
+}
+
+.circle-small{
+width:160px;
+height:160px;
+left:120px;
+}
+
+  }
 </style>
 </head><body>
 
@@ -1224,6 +1326,64 @@ notifications, reporting and internal operations.
 </div>
 
 </section>
+
+  <section class="purpose-section">
+
+<div class="purpose-container">
+
+<!-- LEFT IMAGES -->
+<div class="purpose-images">
+
+<div class="circle circle-big">
+<img src="images/happy-client.webp" alt="">
+</div>
+
+<div class="circle circle-small">
+<img src="images/profit-screen.webp" alt="">
+</div>
+
+</div>
+
+
+<!-- RIGHT CONTENT -->
+<div class="purpose-content">
+
+<h2>Technology That Helps Businesses Grow</h2>
+
+<p class="purpose-intro">
+At TandaTech, we build digital systems that help businesses work smarter, reach more customers, and increase revenue.
+</p>
+
+<div class="purpose-block">
+<h3>Mission</h3>
+<p>
+To create fast and reliable digital solutions that simplify operations and support business growth.
+</p>
+</div>
+
+<div class="purpose-block">
+<h3>Vision</h3>
+<p>
+To empower businesses with modern technology that reduces manual work and unlocks new opportunities.
+</p>
+</div>
+
+<div class="purpose-block">
+<h3>Values</h3>
+
+<ul>
+<li>Efficiency</li>
+<li>Reliability</li>
+<li>Business Impact</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+  </section>
 
   <!-- PRICING -->
 
