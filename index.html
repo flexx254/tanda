@@ -823,13 +823,22 @@ font-size:13px;
 .purpose-container{
 grid-template-columns:1fr;
 gap:35px;
+padding:0;
 }
+
+/* make image background touch screen edges */
 
 .purpose-images{
 clip-path:none;
 height:280px;
 padding:25px;
+
+width:100vw;
+margin-left:calc(-50vw + 50%);
+border-radius:0;
 }
+
+/* circles */
 
 .circle-big{
 width:160px;
@@ -841,6 +850,12 @@ left:30px;
 width:100px;
 height:100px;
 left:140px;
+}
+
+/* text adjustments */
+
+.purpose-content{
+padding:0 20px;
 }
 
 .purpose-content h2{
@@ -857,7 +872,6 @@ font-size:13px;
 }
 
   }
-
 
 #projects{
 display:none;
