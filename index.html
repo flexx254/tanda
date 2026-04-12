@@ -549,6 +549,19 @@ opacity:1;
 transform:translateY(0);
 }
 
+/* IMAGE REVEAL */
+
+.reveal-img{
+opacity:0;
+transform:translateY(60px) scale(.9);
+transition:all .9s ease;
+}
+
+.reveal-img.show{
+opacity:1;
+transform:translateY(0) scale(1);
+}
+
 .see-more{
 display:flex;
 flex-direction:column;
@@ -1408,13 +1421,12 @@ notifications, reporting and internal operations.
 
 <!-- LEFT IMAGES -->
 <div class="purpose-images">
-
-<div class="circle circle-big">
-<img src="happy-client.webp" alt="">
+<div class="circle circle-big reveal-img">
+<img src="image1.webp">
 </div>
 
-<div class="circle circle-small">
-<img src="checkout.webp" alt="">
+<div class="circle circle-small reveal-img">
+<img src="image2.webp">
 </div>
 
 </div>
@@ -1758,6 +1770,28 @@ if(text) text.textContent = "See more";
 });
 
 });
+
+
+const revealImages = document.querySelectorAll(".reveal-img");
+
+function showImagesOnScroll(){
+
+const triggerBottom = window.innerHeight * 0.85;
+
+revealImages.forEach(img => {
+
+const imgTop = img.getBoundingClientRect().top;
+
+if(imgTop < triggerBottom){
+img.classList.add("show");
+}
+
+});
+
+}
+
+window.addEventListener("scroll", showImagesOnScroll);
+showImagesOnScroll();
 </script>
 </body>  
 </html>
