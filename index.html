@@ -1654,36 +1654,57 @@ reveals.forEach(el => observer.observe(el));
     
 </script>  
 <script>
+
+const isMobile = window.innerWidth < 700;
+const isTablet = window.innerWidth >= 700 && window.innerWidth < 1100;
+
 particlesJS("particles-js", {
   particles: {
-    number: { value: 55 },
+    number: {
+      value: isMobile ? 22 : isTablet ? 35 : 50
+    },
     color: { value: "#ffffff" },
-    shape: { type: "circle" },
-    opacity: { value: 0.25 },
-    size: { value: 2.5 },
+
+    shape: {
+      type: "circle"
+    },
+
+    opacity: {
+      value: 0.25,
+      random: false
+    },
+
+    size: {
+      value: isMobile ? 2 : 2.5
+    },
+
     line_linked: {
       enable: true,
-      distance: 150,
+      distance: isMobile ? 110 : 140,
       color: "#ffffff",
       opacity: 0.15,
       width: 1
     },
+
     move: {
       enable: true,
-      speed: 1
+      speed: isMobile ? 0.6 : 1,
+      direction: "none",
+      out_mode: "out"
     }
   },
+
   interactivity: {
     events: {
       onhover: {
-        enable: true,
+        enable: !isMobile, // disable hover interaction on phones
         mode: "grab"
       }
     }
   },
+
   retina_detect: true
 });
-
 /* ===== ARROW SCROLL ANIMATION ===== */
 
 const cards = document.querySelectorAll(".service-card, .project-card");
