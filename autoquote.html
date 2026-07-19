@@ -554,36 +554,7 @@ function addUser(text){
 }
 
 
-sendBtn.addEventListener("click", () => {
 
-    const answer = userInput.value.trim();
-
-    if(answer === "") return;
-
-    clientAnswers.push(answer);
-
-    addUser(answer);
-
-    userInput.value = "";
-
-    currentQuestion++;
-
-    if(currentQuestion < questions.length){
-
-        setTimeout(() => {
-            addAI(questions[currentQuestion]);
-        },500);
-
-    }else{
-
-        setTimeout(() => {
-            addAI("Perfect. Click 'Generate Quotation' to create your quotation.");
-            generateBtn.disabled = false;
-        },500);
-
-    }
-
-});
 
 generateBtn.addEventListener("click", async () => {
 
