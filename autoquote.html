@@ -515,92 +515,101 @@ font-size:18px;
 </footer>
 
 <script>
-
 const clientAnswers = [];
 
 const hamburger = document.getElementById("hamburger");
 const menu = document.getElementById("menu");
 
 const startBtn = document.getElementById("startBtn");
-const generateBtn = document.getElementById("generateBtn");
 const sendBtn = document.getElementById("sendBtn");
+const generateBtn = document.getElementById("generateBtn");
+
 const chatBox = document.getElementById("chatBox");
 const userInput = document.getElementById("userInput");
 
-//-------------------------------------
-// Mobile menu
-//-------------------------------------
+//--------------------------------------------
+// MENU
+//--------------------------------------------
 
-hamburger.addEventListener("click", (e) => {
+hamburger.addEventListener("click", function(e){
+
     hamburger.classList.toggle("active");
     menu.classList.toggle("show");
+
     e.stopPropagation();
+
 });
 
-document.addEventListener("click", (e) => {
-    if (
-        menu.classList.contains("show") &&
-        !menu.contains(e.target) &&
-        !hamburger.contains(e.target)
-    ) {
+document.addEventListener("click", function(e){
+
+    if(menu.classList.contains("show")
+        && !menu.contains(e.target)
+        && !hamburger.contains(e.target)){
+
         menu.classList.remove("show");
         hamburger.classList.remove("active");
+
     }
+
 });
 
-//-------------------------------------
-// Chat helpers
-//-------------------------------------
+//--------------------------------------------
+// CHAT
+//--------------------------------------------
 
-function addAI(text) {
+function addAI(text){
+
     chatBox.innerHTML += `
-        <div class="message ai">${text}</div>
+    <div class="message ai">${text}</div>
     `;
+
     chatBox.scrollTop = chatBox.scrollHeight;
+
 }
 
-function addUser(text) {
+function addUser(text){
+
     chatBox.innerHTML += `
-        <div class="message user">${text}</div>
+    <div class="message user">${text}</div>
     `;
+
     chatBox.scrollTop = chatBox.scrollHeight;
+
 }
 
-//-------------------------------------
-// Start consultation
-//-------------------------------------
+//--------------------------------------------
+// START CONSULTATION
+//--------------------------------------------
 
-startBtn.addEventListener("click", () => {
+startBtn.addEventListener("click", function(){
 
     startBtn.disabled = true;
 
-    addAI("Hello. Tell me about the website or system you would like me to build.");
+    askAI();
 
 });
 
-//-------------------------------------
-// Send message
-//-------------------------------------
+//--------------------------------------------
+// SEND ANSWER
+//--------------------------------------------
 
-sendBtn.addEventListener("click", () => {
+sendBtn.addEventListener("click", function(){
 
     const answer = userInput.value.trim();
 
-    if (!answer) return;
-
-    clientAnswers.push(answer);
+    if(answer==="") return;
 
     addUser(answer);
 
-    userInput.value = "";
+    clientAnswers.push(answer);
 
-    generateBtn.disabled = false;
+    userInput.value="";
+
+    askAI();
 
 });
 
-// Press Enter to send
-
-userInput.addEventListener("keypress", function(e){
+userInput.addEventListener("keypress",function(e){
 
     if(e.key==="Enter"){
 
@@ -610,63 +619,107 @@ userInput.addEventListener("keypress", function(e){
 
 });
 
-//-------------------------------------
-// Generate quotation
-//-------------------------------------
+//--------------------------------------------
+// MAIN FUNCTION
+//--------------------------------------------
 
-generateBtn.addEventListener("click", async () => {
+async function askAI(){
 
-    generateBtn.disabled = true;
-    generateBtn.innerHTML = "Generating...";
-
-    try {
+    try{
 
         const response = await fetch(
             "https://drivers-backend-4spp.onrender.com/generate-quotation",
             {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
                 },
-                body: JSON.stringify({
-                    answers: clientAnswers
+                body:JSON.stringify({
+                    answers:clientAnswers
                 })
             }
         );
 
         const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.error || "Generation failed");
+        if(!response.ok){
+
+            throw new Error(data.error || "Server error");
+
         }
 
-        document.getElementById("quotationCard").classList.remove("hidden");
-
-        document.getElementById("quotationTitle").textContent = data.title;
-        document.getElementById("clientName").textContent = data.client;
-        document.getElementById("quotationTotal").textContent = data.total;
-
         //-------------------------------------
-        // Build quotation table
+        // AI still collecting requirements
         //-------------------------------------
 
-        const tbody = document.querySelector(".quotation-table tbody");
+        if(!data.complete){
 
-        tbody.innerHTML = "";
+            let message = data.question;
 
-        data.items.forEach(item => {
+            if(data.options){
 
-            tbody.innerHTML += `
-                <tr>
-                    <td>${item.service}</td>
-                    <td>${item.description}</td>
-                    <td>KSh ${Number(item.price).toLocaleString()}</td>
-                </tr>
+                message += "<br><br>";
+
+                data.options.forEach((option,index)=>{
+
+                    const letter =
+                    String.fromCharCode(65+index);
+
+                    message +=
+                    `<strong>${letter}.</strong> ${option}<br>`;
+
+                });
+
+            }
+
+            addAI(message);
+
+            return;
+
+        }
+
+        //-------------------------------------
+        // QUOTATION READY
+        //-------------------------------------
+
+        document.getElementById("quotationCard")
+        .classList.remove("hidden");
+
+        document.getElementById("quotationTitle")
+        .textContent=data.title;
+
+        document.getElementById("quotationTotal")
+        .textContent="KSh "+
+        Number(data.total).toLocaleString();
+
+        const tbody =
+        document.querySelector(".quotation-table tbody");
+
+        tbody.innerHTML="";
+
+        data.items.forEach(item=>{
+
+            tbody.innerHTML+=`
+
+            <tr>
+
+                <td>${item.service}</td>
+
+                <td>${item.description}</td>
+
+                <td>KSh ${Number(item.price).toLocaleString()}</td>
+
+            </tr>
+
             `;
 
         });
 
         addAI("Your quotation has been generated successfully.");
+
+        generateBtn.disabled=true;
+        sendBtn.disabled=true;
+        userInput.disabled=true;
 
     }
 
@@ -676,16 +729,19 @@ generateBtn.addEventListener("click", async () => {
 
     }
 
-    finally{
+}
 
-        generateBtn.disabled = false;
+//--------------------------------------------
+// OPTIONAL GENERATE BUTTON
+//--------------------------------------------
 
-        generateBtn.innerHTML =
-        '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Quotation';
+generateBtn.addEventListener("click",function(){
 
-    }
+    askAI();
 
 });
+
+
 </script>
 
 </body>
