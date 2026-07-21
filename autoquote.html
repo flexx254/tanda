@@ -531,6 +531,8 @@ document.addEventListener("click", function(e){
 
 });
 
+
+
 //--------------------------------------------
 // CHAT
 //--------------------------------------------
@@ -538,28 +540,27 @@ document.addEventListener("click", function(e){
 function addAI(text){
 
     chatBox.innerHTML += `
-    <div class="message ai">${text}</div>
+        <div class="message ai">${text}</div>
     `;
 
     chatBox.scrollTop = chatBox.scrollHeight;
-
 }
 
 function addUser(text){
 
     chatBox.innerHTML += `
-    <div class="message user">${text}</div>
+        <div class="message user">${text}</div>
     `;
 
     chatBox.scrollTop = chatBox.scrollHeight;
-
 }
+
 
 //--------------------------------------------
 // START CONSULTATION
 //--------------------------------------------
 
-startBtn.addEventListener("click", function(){
+startBtn.addEventListener("click",function(){
 
     startBtn.disabled = true;
 
@@ -567,22 +568,23 @@ startBtn.addEventListener("click", function(){
 
 });
 
+
 //--------------------------------------------
 // SEND ANSWER
 //--------------------------------------------
 
-sendBtn.addEventListener("click", function(){
+sendBtn.addEventListener("click",function(){
 
     const answer = userInput.value.trim();
 
     if(answer==="") return;
 
-    addUser(answer)
+    addUser(answer);
 
     conversation.push({
-    role: "user",
-    message: answer
-});
+        role:"user",
+        message:answer
+    });
 
     userInput.value="";
 
@@ -593,15 +595,14 @@ sendBtn.addEventListener("click", function(){
 userInput.addEventListener("keypress",function(e){
 
     if(e.key==="Enter"){
-
         sendBtn.click();
-
     }
 
 });
 
+
 //--------------------------------------------
-// MAIN FUNCTION
+// AI CONSULTATION
 //--------------------------------------------
 
 async function askAI(){
@@ -616,79 +617,66 @@ async function askAI(){
                     "Content-Type":"application/json"
                 },
                 body:JSON.stringify({
-    conversation: conversation
-})
+                    conversation:conversation
+                })
             }
         );
 
         const data = await response.json();
 
         if(!response.ok){
-
             throw new Error(data.error || "Server error");
-
         }
 
-        //-------------------------------------
-        // AI still collecting requirements
-        //-------------------------------------
-
+        // Continue consultation
         if(!data.complete){
 
-    addAI(data.message);
+            addAI(data.message);
 
-    conversation.push({
-        role:"assistant",
-        message:data.message
-    });
+            conversation.push({
+                role:"assistant",
+                message:data.message
+            });
 
-    return;
-    }
-
-
+            return;
         }
 
-        //-------------------------------------
-        // QUOTATION READY
-        //-------------------------------------
-consultationResult = data;
+        // Consultation finished
 
-addAI(`
-<b>Consultation Complete ✔</b><br><br>
+        consultationResult = data;
 
-${data.summary}
+        addAI(`
+            <b>Consultation Complete ✔</b><br><br>
+            ${data.summary}
+            <br><br>
+            Click <b>Generate Quotation</b>.
+        `);
 
-<br><br>
+        generateBtn.disabled = false;
 
-Click <b>Generate Quotation</b>.
-`);
+        sendBtn.disabled = true;
+        userInput.disabled = true;
 
-generateBtn.disabled = false;
+    }
+
+    catch(err){
+
+        alert(err.message);
+
+    }
 
 }
 
-catch(err){
-
-    alert(err.message);
-
-}
-
-                         }
-        
 
 //--------------------------------------------
-// OPTIONAL GENERATE BUTTON
+// GENERATE QUOTATION
 //--------------------------------------------
 
 generateBtn.addEventListener("click",generateQuotation);
 
-
-
-
-    async function generateQuotation(){
+async function generateQuotation(){
 
     generateBtn.disabled = true;
-
     generateBtn.innerHTML = "Generating...";
 
     try{
@@ -701,7 +689,7 @@ generateBtn.addEventListener("click",generateQuotation);
                     "Content-Type":"application/json"
                 },
                 body:JSON.stringify({
-                    consultation: consultationResult
+                    consultation:consultationResult
                 })
             }
         );
@@ -709,23 +697,21 @@ generateBtn.addEventListener("click",generateQuotation);
         const data = await response.json();
 
         if(!response.ok){
-
             throw new Error(data.error || "Failed");
-
         }
 
         document.getElementById("quotationCard")
-        .classList.remove("hidden");
+            .classList.remove("hidden");
 
         document.getElementById("quotationTitle")
-        .textContent = data.title;
+            .textContent = data.title;
 
         document.getElementById("quotationTotal")
-        .textContent =
-        "KSh " + Number(data.total).toLocaleString();
+            .textContent =
+            "KSh " + Number(data.total).toLocaleString();
 
         const tbody =
-        document.querySelector(".quotation-table tbody");
+            document.querySelector(".quotation-table tbody");
 
         tbody.innerHTML = "";
 
@@ -741,13 +727,15 @@ generateBtn.addEventListener("click",generateQuotation);
 
         });
 
-        addAI("Your quotation has been generated successfully.");
+        addAI("✅ Your quotation has been generated successfully.");
 
     }
 
     catch(err){
 
         alert(err.message);
+
+        generateBtn.disabled = false;
 
     }
 
@@ -759,6 +747,11 @@ generateBtn.addEventListener("click",generateQuotation);
     }
 
     }
+
+
+        
+  
+    
 </script>
 
 </body>
