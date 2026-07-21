@@ -609,7 +609,7 @@ async function askAI(){
     try{
 
         const response = await fetch(
-            "https://drivers-backend-4spp.onrender.com/generate-quotation",
+            "https://drivers-backend-4spp.onrender.com/ai-consultation",
             {
                 method:"POST",
                 headers:{
@@ -645,25 +645,6 @@ async function askAI(){
     return;
     }
 
-            if(data.options){
-
-                message += "<br><br>";
-
-                data.options.forEach((option,index)=>{
-
-                    const letter =
-                    String.fromCharCode(65+index);
-
-                    message +=
-                    `<strong>${letter}.</strong> ${option}<br>`;
-
-                });
-
-            }
-
-            addAI(message);
-
-            return;
 
         }
 
@@ -683,6 +664,16 @@ Click <b>Generate Quotation</b>.
 `);
 
 generateBtn.disabled = false;
+
+}
+
+catch(err){
+
+    alert(err.message);
+
+}
+
+                         }
         
 
 //--------------------------------------------
@@ -690,7 +681,7 @@ generateBtn.disabled = false;
 //--------------------------------------------
 
 generateBtn.addEventListener("click",generateQuotation);
-});
+
 
 
 
