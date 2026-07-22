@@ -532,18 +532,40 @@ document.addEventListener("click", function(e){
 });
 
 
-
 //--------------------------------------------
 // CHAT
 //--------------------------------------------
 
-function addAI(text){
+async function addAI(text){
 
-    chatBox.innerHTML += `
-        <div class="message ai">${text}</div>
-    `;
+    const div = document.createElement("div");
+    div.className = "message ai";
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.appendChild(div);
+
+    let i = 0;
+
+    return new Promise(resolve=>{
+
+        const timer = setInterval(()=>{
+
+            div.innerHTML = text.substring(0,i);
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            i++;
+
+            if(i > text.length){
+
+                clearInterval(timer);
+                resolve();
+
+            }
+
+        },20);
+
+    });
+
 }
 
 function addUser(text){
@@ -553,8 +575,29 @@ function addUser(text){
     `;
 
     chatBox.scrollTop = chatBox.scrollHeight;
+
 }
 
+function showThinking(){
+
+    const div = document.createElement("div");
+
+    div.className = "message ai";
+    div.id = "thinking";
+
+    div.innerHTML = "⏳ <b>Tanda AI</b> is thinking...";
+
+    chatBox.appendChild(div);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+}
+
+function hideThinking(){
+
+    document.getElementById("thinking")?.remove();
+
+}
 
 //--------------------------------------------
 // START CONSULTATION
@@ -567,7 +610,6 @@ startBtn.addEventListener("click",function(){
     askAI();
 
 });
-
 
 //--------------------------------------------
 // SEND ANSWER
@@ -600,7 +642,6 @@ userInput.addEventListener("keypress",function(e){
 
 });
 
-
 //--------------------------------------------
 // AI CONSULTATION
 //--------------------------------------------
@@ -608,6 +649,8 @@ userInput.addEventListener("keypress",function(e){
 async function askAI(){
 
     try{
+
+        showThinking();
 
         const response = await fetch(
             "https://drivers-backend-4spp.onrender.com/ai-consultation",
@@ -622,16 +665,21 @@ async function askAI(){
             }
         );
 
+        hideThinking();
+
         const data = await response.json();
 
         if(!response.ok){
             throw new Error(data.error || "Server error");
         }
 
+        //------------------------------------
         // Continue consultation
+        //------------------------------------
+
         if(!data.complete){
 
-            addAI(data.message);
+            await addAI(data.message);
 
             conversation.push({
                 role:"assistant",
@@ -639,34 +687,42 @@ async function askAI(){
             });
 
             return;
+
         }
 
-        // Consultation finished
+        //------------------------------------
+        // Consultation completed
+        //------------------------------------
 
         consultationResult = data;
 
-        addAI(`
-            <b>Consultation Complete ✔</b><br><br>
-            ${data.summary}
-            <br><br>
-            Click <b>Generate Quotation</b>.
-        `);
+        await addAI(`
+<b>✅ Consultation Complete</b><br><br>
+
+${data.summary}
+
+<br><br>
+
+Click <b>Generate Quotation</b>.
+`);
 
         generateBtn.disabled = false;
 
         sendBtn.disabled = true;
+
         userInput.disabled = true;
 
     }
 
     catch(err){
 
+        hideThinking();
+
         alert(err.message);
 
     }
 
 }
-
 
 //--------------------------------------------
 // GENERATE QUOTATION
@@ -677,9 +733,13 @@ generateBtn.addEventListener("click",generateQuotation);
 async function generateQuotation(){
 
     generateBtn.disabled = true;
-    generateBtn.innerHTML = "Generating...";
+
+    generateBtn.innerHTML =
+    '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
 
     try{
+
+        showThinking();
 
         const response = await fetch(
             "https://drivers-backend-4spp.onrender.com/generate-quotation",
@@ -694,24 +754,29 @@ async function generateQuotation(){
             }
         );
 
+        hideThinking();
+
         const data = await response.json();
 
         if(!response.ok){
             throw new Error(data.error || "Failed");
         }
 
-        document.getElementById("quotationCard")
-            .classList.remove("hidden");
+        document
+        .getElementById("quotationCard")
+        .classList.remove("hidden");
 
-        document.getElementById("quotationTitle")
-            .textContent = data.title;
+        document
+        .getElementById("quotationTitle")
+        .textContent = data.title;
 
-        document.getElementById("quotationTotal")
-            .textContent =
-            "KSh " + Number(data.total).toLocaleString();
+        document
+        .getElementById("quotationTotal")
+        .textContent =
+        "KSh " + Number(data.total).toLocaleString();
 
         const tbody =
-            document.querySelector(".quotation-table tbody");
+        document.querySelector(".quotation-table tbody");
 
         tbody.innerHTML = "";
 
@@ -727,11 +792,13 @@ async function generateQuotation(){
 
         });
 
-        addAI("✅ Your quotation has been generated successfully.");
+        await addAI("✅ Your quotation has been generated successfully.");
 
     }
 
     catch(err){
+
+        hideThinking();
 
         alert(err.message);
 
@@ -749,6 +816,10 @@ async function generateQuotation(){
     }
 
 
+
+
+
+    
         
   
     
